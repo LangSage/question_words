@@ -4,33 +4,36 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Question Words Trainer — Levels</title>
-  <!-- Bootstrap 5.0.2 (per your preference) -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <!-- Bootstrap 5.0.2 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <style>
     :root { --brand:#0d6efd; }
     body { background:#f8f9fa; }
     .card { border:none; box-shadow:0 6px 18px rgba(0,0,0,.06); border-radius:1rem; }
-    .wchip { display:inline-block; padding:.25rem .5rem; border-radius:.5rem; background:#e9f2ff; color:#0b5ed7; font-weight:600; margin:.125rem; }
+    .wchip {
+      display:inline-block; padding:.25rem .5rem; border-radius:.5rem;
+      background:#e9f2ff; color:#0b5ed7; font-weight:600; margin:.125rem;
+    }
     .answer-pill { border-radius:.75rem; }
-    .correct { border:2px solid #28a745 !important; background:#e8f9ee !important; }
-    .wrong { border:2px solid #dc3545 !important; background:#fde8ea !important; }
-    .dropzone { min-height:44px; border:2px dashed #ced4da; border-radius:.75rem; padding:.25rem .5rem; background:#fff; }
-    .dropzone.filled { border-style:solid; }
-    .kbd {font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
-    .smallcaps { font-variant: all-small-caps; letter-spacing: .04em; }
-    .star { font-size: 1.6rem; filter: drop-shadow(0 2px 3px rgba(0,0,0,.15)); }
+    .answer-pill.active { box-shadow:0 0 0 2px #0d6efd inset; }
+    .star { font-size: 1.7rem; filter: drop-shadow(0 2px 3px rgba(0,0,0,.15)); }
     .star.on { color:#ffc107; }
     .level-btn { border-radius:.75rem; }
-    .timer-badge { font-weight:700; }
+    .smallcaps { font-variant: all-small-caps; letter-spacing: .04em; }
   </style>
 </head>
 <body>
   <div class="container py-4 py-md-5">
     <header class="mb-4 text-center">
       <h1 class="h2 fw-bold mb-2">Question Words Trainer</h1>
+      <p class="text-muted mb-0">
+        Practice <span class="smallcaps">what / where / when / who / why / which / whose / how</span>
+        (+ how much / how many / how often / how long / how far)
+      </p>
     </header>
 
-    <!-- Quick Stats -->
+    <!-- Stats -->
     <div class="row g-3 mb-4">
       <div class="col-6 col-md-3">
         <div class="card p-3 text-center">
@@ -58,24 +61,23 @@
       </div>
     </div>
 
-    <!-- Level Selector -->
+    <!-- Levels -->
     <div class="card p-3 p-md-4 mb-4">
       <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
         <div>
-          <div class="small text-muted">Choose Level</div>
+          <div class="small text-muted mb-1">Choose level</div>
           <div class="btn-group" role="group" aria-label="Levels">
-            <button class="btn btn-outline-primary level-btn" data-level="1">Level 1</button>
+            <button class="btn btn-primary level-btn" data-level="1">Level 1</button>
             <button class="btn btn-outline-primary level-btn" data-level="2">Level 2</button>
             <button class="btn btn-outline-primary level-btn" data-level="3">Level 3</button>
             <button class="btn btn-outline-primary level-btn" data-level="4">Level 4</button>
             <button class="btn btn-outline-primary level-btn" data-level="5">Level 5</button>
           </div>
         </div>
-        
-          <span id="timer" class="badge bg-light text-dark timer-badge">--</span>
+        <div class="text-end small text-muted">
+          Check ➜ then press <span class="fw-bold">Next</span> to continue.
         </div>
       </div>
-      <div class="mt-2 small text-muted">Hotkeys: <span class="kbd">Enter</span> to check; <span class="kbd">N</span> next.</div>
     </div>
 
     <!-- Task Area -->
@@ -85,7 +87,9 @@
     <div class="card p-3 p-md-4">
       <div class="d-flex align-items-center justify-content-between">
         <h2 class="h5 mb-0">Cheat Sheet</h2>
-        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#sheet">Show/Hide</button>
+        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#sheet">
+          Show/Hide
+        </button>
       </div>
       <div class="collapse show mt-3" id="sheet">
         <div class="mb-2">
@@ -107,34 +111,36 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+          crossorigin="anonymous"></script>
   <script>
-    // ===== Data =====
+    // ===== DATA =====
     const WORDS = [
       'what','where','when','who','why','which','whose','how',
       'how much','how many','how often','how long','how far'
     ];
 
     const FILL_BANK = [
-      {b:"___ is your favorite subject?", a:"what", h:"specific info"},
+      {b:"___ is your favorite subject?", a:"what", h:"specific information"},
       {b:"___ are you from?", a:"where", h:"place"},
-      {b:"___ is your birthday?", a:"when", h:"time/date"},
+      {b:"___ is your birthday?", a:"when", h:"time / date"},
       {b:"___ is standing at the door?", a:"who", h:"person"},
       {b:"___ are you late?", a:"why", h:"reason"},
       {b:"___ color do you prefer — red or blue?", a:"which", h:"choice"},
       {b:"___ bag is this?", a:"whose", h:"possession"},
-      {b:"___ do you come to college? By bus or on foot?", a:"how", h:"manner"},
-      {b:"___ milk do we need for pancakes?", a:"how much", h:"uncountable"},
-      {b:"___ students are in your group?", a:"how many", h:"countable"},
-      {b:"___ do you travel? (every day/once a week)", a:"how often", h:"frequency"},
+      {b:"___ do you come to college? By bus or on foot?", a:"how", h:"manner / method"},
+      {b:"___ milk do we need for pancakes?", a:"how much", h:"quantity (uncountable)"},
+      {b:"___ students are in your group?", a:"how many", h:"quantity (countable)"},
+      {b:"___ do you travel? (every day / once a week)", a:"how often", h:"frequency"},
       {b:"___ is the lesson? (60 minutes)", a:"how long", h:"duration"},
       {b:"___ is your college from your house?", a:"how far", h:"distance"},
       {b:"At ___ time does the lesson start?", a:"what", h:"what time"},
       {b:"___ of these two options is cheaper?", a:"which", h:"limited set"},
-      {b:"___ are you feeling today?", a:"how", h:"state"},
+      {b:"___ are you feeling today?", a:"how", h:"state / condition"},
       {b:"___ do you need this document?", a:"why", h:"reason"},
       {b:"___ city would you like to visit next?", a:"which", h:"choice"},
-      {b:"___ is your best friend’s name?", a:"what", h:"specific"},
+      {b:"___ is your best friend’s name?", a:"what", h:"specific information"},
       {b:"___ does the museum open on weekends?", a:"when", h:"time"}
     ];
 
@@ -169,263 +175,259 @@
       {prompt:"(distance) ____ is the station?", a:"how far"}
     ];
 
-    // ===== Levels =====
-    // Each level has a type and always uses the full bank (max) for that type.
+    // LEVEL CONFIG
     const LEVELS = {
-      1: { name:'Fill-in Basics', type:'fill', timer:null },
-      2: { name:'Fill-in Extended', type:'fill', timer:null },
-      3: { name:'Question → Options', type:'match', timer:null },
-      4: { name:'Speed Round', type:'speed', timer:60 },
-      5: { name:'Speed — Challenge', type:'speed', timer:45 }
+      1: {name: "Fill sentences (1)", type: "fill"},
+      2: {name: "Fill sentences (2)", type: "fill"},
+      3: {name: "Question → answer", type: "qa"},
+      4: {name: "Concept prompts (1)", type: "speed"},
+      5: {name: "Concept prompts (2)", type: "speed"}
     };
 
-    // ===== State =====
-    let score=0, streak=0, tasks=0, correctTotal=0, mistakes=0;
-    let currentSet=[], currentIndex=0, currentLevel=1, currentMode='fill';
-    let speedTimer=null, 
+    // ===== STATE =====
+    let score = 0, streak = 0, tasks = 0, correctTotal = 0;
+    let currentLevel = 1;
+    let levelItems = [];    // unified MCQ items
+    let idx = 0;
+    let levelMistakes = 0;
 
-    function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]); }
-    function updateStats(){
-      document.getElementById('statScore').textContent=score;
-      document.getElementById('statStreak').textContent=streak;
-      document.getElementById('statTasks').textContent=tasks;
-      const acc = tasks? Math.round((correctTotal/tasks)*100):0;
-      document.getElementById('statAcc').textContent=acc+"%";
-    }
-    function setTimerBadge(v){ document.getElementById('timer').textContent = (v==null? '--' : v+'s'); }
-
-    // ===== Level boot =====
-    function startLevel(lv){
-      currentLevel = lv; const cfg = LEVELS[lv];
-      currentMode = cfg.type; mistakes = 0; speedScore = 0; currentIndex = 0;
-      if(cfg.type==='fill') { currentSet = FILL_BANK.slice(); }
-      if(cfg.type==='match'){ currentSet = MATCH_BANK.slice(); }
-      if(cfg.type==='speed'){ currentSet = SPEED_BANK.slice(); }
-      // full set, but random order
-      currentSet = shuffle(currentSet);
-      if(cfg.type==='speed'){    renderSpeed(); }
-      else { clearInterval(speedTimer);  cfg.type==='fill' ? renderFillItem() : renderMatch(); }
-      // mark active level button
-      document.querySelectorAll('.level-btn').forEach(b=>{
-        b.classList.toggle('btn-primary', b.dataset.level==lv);
-        b.classList.toggle('btn-outline-primary', b.dataset.level!=lv);
-      });
+    function shuffle(arr) {
+      return arr.map(v => [Math.random(), v])
+        .sort((a, b) => a[0] - b[0])
+        .map(x => x[1]);
     }
 
-    // ===== Common helpers =====
-    function nextItem(){
-      if(currentIndex < currentSet.length-1){
-        currentIndex++;
-        if(currentMode==='fill') renderFillItem();
-        else if(currentMode==='match') renderMatch();
-        else if(currentMode==='speed') renderSpeed();
-      } else {
-        endLevel();
-      }
+    function updateStats() {
+      document.getElementById('statScore').textContent = score;
+      document.getElementById('statStreak').textContent = streak;
+      document.getElementById('statTasks').textContent = tasks;
+      const acc = tasks ? Math.round((correctTotal / tasks) * 100) : 0;
+      document.getElementById('statAcc').textContent = acc + "%";
     }
 
-    function starsFromMistakes(m){
-      if(m===0) return 5;
-      if(m<=2) return 4;
-      if(m<=4) return 3;
-      if(m<=6) return 2;
+    function starsFromMistakes(m) {
+      if (m === 0) return 5;
+      if (m <= 2) return 4;
+      if (m <= 4) return 3;
+      if (m <= 6) return 2;
       return 1;
     }
 
-    function starHTML(n){
-      let out='';
-      for(let i=1;i<=5;i++) out += `<span class="star ${i<=n?'on':''}">★</span>`;
+    function starHTML(n) {
+      let out = "";
+      for (let i = 1; i <= 5; i++) {
+        out += `<span class="star ${i <= n ? 'on' : ''}">★</span>`;
+      }
       return out;
     }
 
-    function endLevel(){
-      clearInterval(speedTimer);
-      const stars = starsFromMistakes(mistakes);
-      const acc = tasks? Math.round((correctTotal/tasks)*100):0;
-      const title = mistakes===0? 'Perfect run!':'Level complete';
+    // Build items for a level into a unified format:
+    // { question, hint, options[], correct }
+    function buildLevelItems(levelNum) {
+      const cfg = LEVELS[levelNum];
+      const type = cfg.type;
+      let items = [];
+
+      if (type === "fill") {
+        items = FILL_BANK.map(it => ({
+          question: it.b.replace("___", "( ? )"),
+          hint: it.h,
+          correct: it.a,
+          source: "fill"   // options from WORDS (6)
+        }));
+      } else if (type === "qa") {
+        const allAnswers = MATCH_BANK.map(x => x.a);
+        items = MATCH_BANK.map(it => {
+          const distractors = shuffle(allAnswers.filter(a => a !== it.a)).slice(0, 3);
+          const opts = shuffle([it.a, ...distractors]);
+          return {
+            question: it.q,
+            hint: "",
+            correct: it.a,
+            options: opts,
+            source: "qa"
+          };
+        });
+      } else if (type === "speed") {
+        items = SPEED_BANK.map(it => ({
+          question: it.prompt,
+          hint: "",
+          correct: it.a,
+          source: "speed"  // options from WORDS (4)
+        }));
+      }
+
+      // Always max — use all items, just shuffle them
+      return shuffle(items);
+    }
+
+    function startLevel(levelNum) {
+      currentLevel = levelNum;
+      levelItems = buildLevelItems(levelNum);
+      idx = 0;
+      levelMistakes = 0;
+
+      // buttons active style
+      document.querySelectorAll(".level-btn").forEach(btn => {
+        const active = +btn.dataset.level === levelNum;
+        btn.classList.toggle("btn-primary", active);
+        btn.classList.toggle("btn-outline-primary", !active);
+      });
+
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const item = levelItems[idx];
+      let options = [];
+
+      if (item.source === "fill") {
+        // 6 options from WORDS
+        options = shuffle(WORDS).slice(0, 6);
+        if (!options.includes(item.correct)) {
+          options[Math.floor(Math.random() * options.length)] = item.correct;
+        }
+      } else if (item.source === "speed") {
+        // 4 options from WORDS
+        options = shuffle(WORDS).slice(0, 4);
+        if (!options.includes(item.correct)) {
+          options[Math.floor(Math.random() * options.length)] = item.correct;
+        }
+      } else if (item.source === "qa") {
+        options = item.options.slice();
+      }
+
+      const pills = options.map((opt, i) =>
+        `<button class="btn btn-outline-primary answer-pill me-2 mb-2" data-opt="${opt}">
+           ${i + 1}. ${opt}
+         </button>`
+      ).join("");
+
+      const cfg = LEVELS[currentLevel];
+
+      const html = `
+        <div class="card p-3 p-md-4">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="small text-muted">
+              Level ${currentLevel}: ${cfg.name} — Question ${idx + 1}/${levelItems.length}
+            </div>
+            <div class="small text-muted">${item.hint ? "Hint: " + item.hint : ""}</div>
+          </div>
+          <h3 class="h5 mb-3">${item.question}</h3>
+          <div id="options" class="mb-2">${pills}</div>
+          <div class="d-grid d-md-flex gap-2 mt-2">
+            <button id="btnCheck" class="btn btn-success" disabled>Check</button>
+            <button id="btnNext" class="btn btn-outline-secondary" disabled>Next</button>
+          </div>
+          <div class="mt-3" id="feedback"></div>
+        </div>
+      `;
+
+      const area = document.getElementById("area");
+      area.innerHTML = html;
+
+      let picked = null;
+      const pillsEls = area.querySelectorAll(".answer-pill");
+      const btnCheck = document.getElementById("btnCheck");
+      const btnNext = document.getElementById("btnNext");
+      const fb = document.getElementById("feedback");
+
+      pillsEls.forEach(btn => {
+        btn.addEventListener("click", () => {
+          pillsEls.forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          picked = btn.dataset.opt;
+          btnCheck.disabled = false;
+        });
+      });
+
+      btnCheck.addEventListener("click", () => {
+        if (!picked) return;
+        const ok = picked === item.correct;
+        tasks++;
+        if (ok) {
+          score += 8;
+          streak++;
+          correctTotal++;
+          fb.innerHTML = `<div class="alert alert-success">✅ Correct: <strong>${item.correct}</strong></div>`;
+        } else {
+          score = Math.max(0, score - 2);
+          streak = 0;
+          levelMistakes++;
+          fb.innerHTML = `<div class="alert alert-danger">❌ Correct: <strong>${item.correct}</strong></div>`;
+        }
+        updateStats();
+        btnCheck.disabled = true;
+        btnNext.disabled = false;
+      });
+
+      btnNext.addEventListener("click", () => {
+        if (idx < levelItems.length - 1) {
+          idx++;
+          renderQuestion();
+        } else {
+          endLevel();
+        }
+      });
+    }
+
+    function endLevel() {
+      const stars = starsFromMistakes(levelMistakes);
+      const acc = tasks ? Math.round((correctTotal / tasks) * 100) : 0;
+      const title = levelMistakes === 0 ? "Perfect run!" : "Level complete";
+
       const html = `
         <div class="card p-4 text-center">
           <h3 class="h4 mb-2">${title} 🎉</h3>
           <div class="mb-2">${starHTML(stars)}</div>
-          <p class="text-muted mb-1">Mistakes: <strong>${mistakes}</strong> • Accuracy: <strong>${acc}%</strong> • Score: <strong>${score}</strong></p>
+          <p class="text-muted mb-1">
+            Mistakes this level: <strong>${levelMistakes}</strong>
+            • Global accuracy: <strong>${acc}%</strong>
+            • Global score: <strong>${score}</strong>
+          </p>
           <div class="d-grid d-md-flex justify-content-center gap-2 mt-2">
-            <button class="btn btn-primary" id="again">Replay Level ${currentLevel}</button>
-            <button class="btn btn-outline-secondary" id="nextLvl">Next Level</button>
-            <button class="btn btn-outline-dark" id="review">Review Items</button>
+            <button class="btn btn-primary" id="again">Replay level ${currentLevel}</button>
+            <button class="btn btn-outline-secondary" id="nextLvl">Next level</button>
+            <button class="btn btn-outline-dark" id="review">Review questions</button>
           </div>
-        </div>`;
-      document.getElementById('area').innerHTML = html;
-      document.getElementById('again').onclick = () => startLevel(currentLevel);
-      document.getElementById('nextLvl').onclick = () => startLevel(Math.min(5, currentLevel+1));
-      document.getElementById('review').onclick = reviewLast;
+        </div>
+      `;
+      const area = document.getElementById("area");
+      area.innerHTML = html;
+
+      document.getElementById("again").onclick = () => startLevel(currentLevel);
+      document.getElementById("nextLvl").onclick = () => startLevel(Math.min(5, currentLevel + 1));
+      document.getElementById("review").onclick = reviewLast;
     }
 
-    // ===== Fill-in =====
-    function renderFillItem(){
-      const item = currentSet[currentIndex];
-      const opts = shuffle(WORDS).slice(0,6);
-      if(!opts.includes(item.a)) { opts[Math.floor(Math.random()*opts.length)] = item.a; }
-      const pills = opts.map(w=>`<button type=\"button\" class=\"btn btn-outline-primary answer-pill me-2 mb-2\" data-word=\"${w}\">${w}</button>`).join('');
+    function reviewLast() {
+      const list = levelItems.map((it, i) =>
+        `<li class="list-group-item">
+          ${i + 1}. ${it.question} — <strong>${it.correct}</strong>
+        </li>`
+      ).join("");
+      document.getElementById("area").innerHTML =
+        `<div class="card p-3"><ol class="list-group list-group-numbered">${list}</ol></div>`;
+    }
 
-      const html = `
-        <div class=\"card p-3 p-md-4\">
-          <div class=\"d-flex justify-content-between align-items-center mb-2\">
-            <div class=\"small text-muted\">Level ${currentLevel} — Question ${currentIndex+1} / ${currentSet.length}</div>
-            <div class=\"small text-muted\">Hint: ${item.h}</div>
-          </div>
-          <h3 class=\"h5 mb-3\">${item.b.replace('___', '<span class=\\"fw-bold text-primary\\">(choose)</span>')}</h3>
-          <div class=\"mb-2\" id=\"fillPills\">${pills}</div>
-          <div class=\"d-grid d-md-flex gap-2\">
-            <button id=\"btnCheck\" class=\"btn btn-success\" disabled>Check</button>
-            <button id=\"btnNext\" class=\"btn btn-outline-secondary\" disabled>Next</button>
-          </div>
-          <div class=\"mt-3\" id=\"feedback\"></div>
-        </div>`;
-
-      document.getElementById('area').innerHTML = html;
-
-      let picked = null;
-      document.querySelectorAll('#fillPills .answer-pill').forEach(btn=>{
-        btn.addEventListener('click',()=>{
-          document.querySelectorAll('#fillPills .answer-pill').forEach(b=>b.classList.remove('active'));
-          btn.classList.add('active');
-          picked = btn.dataset.word;
-          document.getElementById('btnCheck').disabled = false;
-        });
+    // Level buttons
+    document.querySelectorAll(".level-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const lv = +btn.dataset.level;
+        startLevel(lv);
       });
-
-      document.getElementById('btnCheck').onclick = () => checkFill(item, picked);
-      document.getElementById('btnNext').onclick = nextItem;
-    }
-
-    function checkFill(item, picked){(item){
-      const val = (document.getElementById('fillInput').value||'').trim().toLowerCase();
-      const ok = val === item.a;
-      tasks++;
-      if(ok){ score+=10; streak++; correctTotal++; }
-      else { score=Math.max(0,score-2); streak=0; mistakes++; }
-      updateStats();
-      const fb = document.getElementById('feedback');
-      fb.innerHTML = ok
-        ? `<div class="alert alert-success">✅ Correct! <strong>${item.a}</strong></div>`
-        : `<div class="alert alert-danger">❌ Not quite. Correct: <strong>${item.a}</strong></div>`;
-    }
-
-    function reveal(item){
-      document.getElementById('fillInput').value = item.a;
-      document.getElementById('fillInput').classList.add('correct');
-    }
-
-    function reviewLast(){
-      if(currentMode==='fill'){
-        const list = currentSet.map((it,i)=>`<li class="list-group-item">${i+1}. ${it.b.replace('___', `<strong>${it.a}</strong>`)}</li>`).join('');
-        document.getElementById('area').innerHTML = `<div class="card p-3"><ol class="list-group list-group-numbered">${list}</ol></div>`;
-      } else if(currentMode==='match') {
-        const list = currentSet.map((it,i)=>`<li class="list-group-item">${i+1}. <strong>${it.q}</strong> — ${it.a}</li>`).join('');
-        document.getElementById('area').innerHTML = `<div class="card p-3"><ol class="list-group list-group-numbered">${list}</ol></div>`;
-      } else if(currentMode==='speed') {
-        const list = currentSet.map((it,i)=>`<li class="list-group-item">${i+1}. ${it.prompt} — <strong>${it.a}</strong></li>`).join('');
-        document.getElementById('area').innerHTML = `<div class="card p-3"><ol class="list-group list-group-numbered">${list}</ol></div>`;
-      }
-    }
-
-    // ===== Match (phone-friendly MCQ) =====
-    function renderMatch(){
-      const it = currentSet[currentIndex];
-      const answers = currentSet.map(x=>x.a);
-      const distractors = shuffle(answers.filter(x=>x!==it.a)).slice(0,3);
-      const opts = shuffle([it.a, ...distractors]);
-      const pills = opts.map((t,i)=>`<button class=\"btn btn-outline-primary answer-pill me-2 mb-2\" data-opt=\"${t}\">${i+1}. ${t}</button>`).join('');
-
-      const html = `
-        <div class=\"card p-3 p-md-4\">
-          <div class=\"d-flex justify-content-between align-items-center mb-2\">
-            <div class=\"small text-muted\">Level ${currentLevel} — Question ${currentIndex+1}/${currentSet.length}</div>
-            <div class=\"small text-muted\">Pick the correct answer</div>
-          </div>
-          <h3 class=\"h5 mb-3\">${it.q}</h3>
-          <div id=\"matchPills\">${pills}</div>
-          <div class=\"d-grid d-md-flex gap-2 mt-2\">
-            <button id=\"matchCheck\" class=\"btn btn-success\" disabled>Check</button>
-            <button id=\"btnNext2\" class=\"btn btn-outline-secondary\" disabled>Next</button>
-          </div>
-          <div class=\"mt-3\" id=\"feedback\"></div>
-        </div>`;
-
-      document.getElementById('area').innerHTML = html;
-
-      let picked=null;
-      document.querySelectorAll('#matchPills .answer-pill').forEach(btn=>{
-        btn.addEventListener('click',()=>{
-          document.querySelectorAll('#matchPills .answer-pill').forEach(b=>b.classList.remove('active'));
-          btn.classList.add('active');
-          picked = btn.dataset.opt;
-          document.getElementById('matchCheck').disabled = false;
-        })
-      });
-
-      document.getElementById('matchCheck').onclick = () => {
-        const ok = picked === it.a;
-        tasks++;
-        if(ok){ score+=5; streak++; correctTotal++; }
-        else { score=Math.max(0,score-1); streak=0; mistakes++; }
-        updateStats();
-        document.getElementById('feedback').innerHTML = ok? `<div class=\"alert alert-success\">✅ ${it.a}</div>`: `<div class=\"alert alert-danger\">❌ ${it.a}</div>`;
-        document.getElementById('btnNext2').disabled = false;
-      };
-      document.getElementById('btnNext2').onclick = nextItem;
-    }
-
-    // ===== Speed =====
-    function renderSpeed(){
-      const it = currentSet[currentIndex];
-      const opts = shuffle(WORDS).slice(0,4);
-      if(!opts.includes(it.a)) opts[Math.floor(Math.random()*opts.length)] = it.a;
-      const pills = opts.map((w,i)=>`<button class=\"btn btn-outline-primary answer-pill me-2 mb-2\" data-word=\"${w}\">${i+1}. ${w}</button>`).join('');
-      const html = `
-        <div class=\"card p-3 p-md-4\">
-          <div class=\"d-flex justify-content-between align-items-center mb-2\">
-            <div class=\"small text-muted\">Level ${currentLevel} — Speed ${currentIndex+1}/${currentSet.length}</div>
-            <div class=\"small text-muted\"><span id=\"spdTime\">${
-
-      document.getElementById('area').innerHTML = html;
-
-      let picked=null;
-      document.querySelectorAll('#speedPills .answer-pill').forEach(btn=>{
-        btn.addEventListener('click',()=>{
-          document.querySelectorAll('#speedPills .answer-pill').forEach(b=>b.classList.remove('active'));
-          btn.classList.add('active');
-          picked = btn.dataset.word;
-          document.getElementById('spdCheck').disabled = false;
-        });
-      });
-
-      document.getElementById('spdCheck').onclick = () => {
-        const ok = picked===it.a;
-        tasks++;
-        if(ok){ score+=6; streak++; correctTotal++; speedScore+=6; }
-        else { score=Math.max(0,score-1); streak=0; mistakes++; }
-        updateStats();
-        document.getElementById('feedback').innerHTML = ok? `<div class=\"alert alert-success\">✅ ${it.a}</div>`: `<div class=\"alert alert-danger\">❌ ${it.a}</div>`;
-        document.getElementById('spdNext').disabled = false;
-      };
-      document.getElementById('spdNext').onclick = nextItem;
-    }
-
-          },1000);
-    }
-
-    // ===== Wiring =====
-    document.querySelectorAll('.level-btn').forEach(btn=>{
-      btn.addEventListener('click', ()=> startLevel(+btn.dataset.level));
     });
 
-    function resetAll(){ score=0; streak=0; tasks=0; correctTotal=0; mistakes=0; updateStats(); }
+    function resetStats() {
+      score = 0;
+      streak = 0;
+      tasks = 0;
+      correctTotal = 0;
+      updateStats();
+    }
 
-    window.addEventListener('keydown', (e)=>{ if(e.key.toLowerCase()==='n') nextItem(); });
-
-    // boot: Level 1
-    resetAll();
+    // Init
+    resetStats();
     startLevel(1);
   </script>
 </body>
