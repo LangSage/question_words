@@ -71,8 +71,7 @@
             <button class="btn btn-outline-primary level-btn" data-level="5">Level 5</button>
           </div>
         </div>
-        <div class="text-end">
-          <div class="small text-muted">Timer</div>
+        
           <span id="timer" class="badge bg-light text-dark timer-badge">--</span>
         </div>
       </div>
@@ -175,7 +174,7 @@
     const LEVELS = {
       1: { name:'Fill-in Basics', type:'fill', timer:null },
       2: { name:'Fill-in Extended', type:'fill', timer:null },
-      3: { name:'Matching Grid', type:'match', timer:null },
+      3: { name:'Question → Options', type:'match', timer:null },
       4: { name:'Speed Round', type:'speed', timer:60 },
       5: { name:'Speed — Challenge', type:'speed', timer:45 }
     };
@@ -183,7 +182,7 @@
     // ===== State =====
     let score=0, streak=0, tasks=0, correctTotal=0, mistakes=0;
     let currentSet=[], currentIndex=0, currentLevel=1, currentMode='fill';
-    let speedTimer=null, timeLeft=0, speedScore=0;
+    let speedTimer=null, 
 
     function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]); }
     function updateStats(){
@@ -204,8 +203,8 @@
       if(cfg.type==='speed'){ currentSet = SPEED_BANK.slice(); }
       // full set, but random order
       currentSet = shuffle(currentSet);
-      if(cfg.type==='speed'){ timeLeft = cfg.timer; startSpeedTimer(); setTimerBadge(timeLeft); renderSpeed(); }
-      else { clearInterval(speedTimer); setTimerBadge(null); cfg.type==='fill' ? renderFillItem() : renderMatch(); }
+      if(cfg.type==='speed'){    renderSpeed(); }
+      else { clearInterval(speedTimer);  cfg.type==='fill' ? renderFillItem() : renderMatch(); }
       // mark active level button
       document.querySelectorAll('.level-btn').forEach(b=>{
         b.classList.toggle('btn-primary', b.dataset.level==lv);
@@ -266,47 +265,40 @@
       const item = currentSet[currentIndex];
       const opts = shuffle(WORDS).slice(0,6);
       if(!opts.includes(item.a)) { opts[Math.floor(Math.random()*opts.length)] = item.a; }
-      const pills = opts.map(w=>`<button type="button" class="btn btn-outline-primary answer-pill me-2 mb-2" data-word="${w}">${w}</button>`).join('');
+      const pills = opts.map(w=>`<button type=\"button\" class=\"btn btn-outline-primary answer-pill me-2 mb-2\" data-word=\"${w}\">${w}</button>`).join('');
 
       const html = `
-        <div class="card p-3 p-md-4">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="small text-muted">Level ${currentLevel} — Fill-in ${currentIndex+1} / ${currentSet.length}</div>
-            <div class="small text-muted">Hint: ${item.h}</div>
+        <div class=\"card p-3 p-md-4\">
+          <div class=\"d-flex justify-content-between align-items-center mb-2\">
+            <div class=\"small text-muted\">Level ${currentLevel} — Question ${currentIndex+1} / ${currentSet.length}</div>
+            <div class=\"small text-muted\">Hint: ${item.h}</div>
           </div>
-          <h3 class="h5 mb-3">${item.b.replace('___', '<span class="fw-bold text-primary">(choose)</span>')}</h3>
-          <div class="mb-2" id="fillPills">${pills}</div>
-          <div class="input-group mb-3">
-            <span class="input-group-text">Your answer</span>
-            <input id="fillInput" class="form-control" placeholder="type or click a pill…">
+          <h3 class=\"h5 mb-3\">${item.b.replace('___', '<span class=\\"fw-bold text-primary\\">(choose)</span>')}</h3>
+          <div class=\"mb-2\" id=\"fillPills\">${pills}</div>
+          <div class=\"d-grid d-md-flex gap-2\">
+            <button id=\"btnCheck\" class=\"btn btn-success\" disabled>Check</button>
+            <button id=\"btnNext\" class=\"btn btn-outline-secondary\" disabled>Next</button>
           </div>
-          <div class="d-grid d-md-flex gap-2">
-            <button id="btnCheck" class="btn btn-success">Check</button>
-            <button id="btnNext" class="btn btn-outline-secondary">Next</button>
-          </div>
-          <div class="mt-3" id="feedback"></div>
+          <div class=\"mt-3\" id=\"feedback\"></div>
         </div>`;
 
       document.getElementById('area').innerHTML = html;
 
+      let picked = null;
       document.querySelectorAll('#fillPills .answer-pill').forEach(btn=>{
         btn.addEventListener('click',()=>{
-          document.getElementById('fillInput').value = btn.dataset.word;
-          document.getElementById('fillInput').focus();
+          document.querySelectorAll('#fillPills .answer-pill').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          picked = btn.dataset.word;
+          document.getElementById('btnCheck').disabled = false;
         });
       });
-      document.getElementById('btnCheck').onclick = () => checkFill(item);
-      document.getElementById('btnNext').onclick = nextItem;
 
-      const input = document.getElementById('fillInput');
-      input.addEventListener('keydown', (e)=>{
-        if(e.key==='Enter') document.getElementById('btnCheck').click();
-        if(e.key.toLowerCase()==='n') document.getElementById('btnNext').click();
-      });
-      input.focus();
+      document.getElementById('btnCheck').onclick = () => checkFill(item, picked);
+      document.getElementById('btnNext').onclick = nextItem;
     }
 
-    function checkFill(item){
+    function checkFill(item, picked){(item){
       const val = (document.getElementById('fillInput').value||'').trim().toLowerCase();
       const ok = val === item.a;
       tasks++;
@@ -337,76 +329,51 @@
       }
     }
 
-    // ===== Match =====
+    // ===== Match (phone-friendly MCQ) =====
     function renderMatch(){
-      // Full set, random order
-      const rights = shuffle(currentSet.map((it,i)=>({text:it.a, idx:i})));
+      const it = currentSet[currentIndex];
+      const answers = currentSet.map(x=>x.a);
+      const distractors = shuffle(answers.filter(x=>x!==it.a)).slice(0,3);
+      const opts = shuffle([it.a, ...distractors]);
+      const pills = opts.map((t,i)=>`<button class=\"btn btn-outline-primary answer-pill me-2 mb-2\" data-opt=\"${t}\">${i+1}. ${t}</button>`).join('');
+
       const html = `
-        <div class="card p-3 p-md-4">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="small text-muted">Level ${currentLevel} — Match ${currentSet.length} pairs</div>
-            <div class="small text-muted">Drag answers to dropzones</div>
+        <div class=\"card p-3 p-md-4\">
+          <div class=\"d-flex justify-content-between align-items-center mb-2\">
+            <div class=\"small text-muted\">Level ${currentLevel} — Question ${currentIndex+1}/${currentSet.length}</div>
+            <div class=\"small text-muted\">Pick the correct answer</div>
           </div>
-          <div class="row g-3">
-            <div class="col-12 col-md-6">
-              ${currentSet.map((it,i)=>`
-                <div class="mb-2">
-                  <div class="p-2 bg-light rounded border mb-2"><strong>${i+1}.</strong> ${it.q}</div>
-                  <div class="dropzone" data-drop="${i}"></div>
-                </div>
-              `).join('')}
-            </div>
-            <div class="col-12 col-md-6">
-              <div id="pool">${rights.map(r=>`<div class=\"p-2 mb-2 bg-white rounded border draggable\" draggable=\"true\" data-aidx=\"${r.idx}\">${r.text}</div>`).join('')}</div>
-            </div>
+          <h3 class=\"h5 mb-3\">${it.q}</h3>
+          <div id=\"matchPills\">${pills}</div>
+          <div class=\"d-grid d-md-flex gap-2 mt-2\">
+            <button id=\"matchCheck\" class=\"btn btn-success\" disabled>Check</button>
+            <button id=\"btnNext2\" class=\"btn btn-outline-secondary\" disabled>Next</button>
           </div>
-          <div class="d-grid d-md-flex gap-2 mt-3">
-            <button id="matchCheck" class="btn btn-success">Check</button>
-            <button id="matchReset" class="btn btn-outline-secondary">Reset</button>
-          </div>
-          <div class="mt-3" id="feedback"></div>
+          <div class=\"mt-3\" id=\"feedback\"></div>
         </div>`;
 
       document.getElementById('area').innerHTML = html;
 
-      // Drag & drop
-      const draggables = Array.from(document.querySelectorAll('.draggable'));
-      draggables.forEach(el=>{
-        el.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', el.dataset.aidx); });
-      });
-      document.querySelectorAll('.dropzone').forEach(zone=>{
-        zone.addEventListener('dragover', e=>{ e.preventDefault(); });
-        zone.addEventListener('drop', e=>{
-          e.preventDefault();
-          const aidx = e.dataTransfer.getData('text/plain');
-          const source = draggables.find(d=>d.dataset.aidx===aidx);
-          const clone = source.cloneNode(true);
-          clone.classList.remove('draggable');
-          clone.draggable = false;
-          zone.innerHTML='';
-          zone.appendChild(clone);
-          zone.classList.add('filled');
-          zone.dataset.aidx = aidx;
-        });
+      let picked=null;
+      document.querySelectorAll('#matchPills .answer-pill').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          document.querySelectorAll('#matchPills .answer-pill').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          picked = btn.dataset.opt;
+          document.getElementById('matchCheck').disabled = false;
+        })
       });
 
       document.getElementById('matchCheck').onclick = () => {
-        let localCorrect=0; let localTotal=currentSet.length; let localMistakes=0;
-        document.querySelectorAll('.dropzone').forEach(zone=>{
-          tasks++;
-          const dropIdx = +zone.dataset.drop;
-          const got = zone.dataset.aidx;
-          const ok = (got !== undefined) && (+got === dropIdx);
-          if(ok){ localCorrect++; correctTotal++; score+=5; zone.classList.add('correct'); }
-          else { score=Math.max(0,score-1); zone.classList.add('wrong'); localMistakes++; }
-        });
-        mistakes += localMistakes; // each wrong slot counts as one mistake
-        streak = (localCorrect===localTotal)? (streak+1) : 0;
+        const ok = picked === it.a;
+        tasks++;
+        if(ok){ score+=5; streak++; correctTotal++; }
+        else { score=Math.max(0,score-1); streak=0; mistakes++; }
         updateStats();
-        document.getElementById('feedback').innerHTML = `<div class="alert alert-info">You matched <strong>${localCorrect}/${localTotal}</strong>. Mistakes this check: <strong>${localMistakes}</strong></div>`;
-        if(localCorrect===localTotal){ endLevel(); }
+        document.getElementById('feedback').innerHTML = ok? `<div class=\"alert alert-success\">✅ ${it.a}</div>`: `<div class=\"alert alert-danger\">❌ ${it.a}</div>`;
+        document.getElementById('btnNext2').disabled = false;
       };
-      document.getElementById('matchReset').onclick = () => startLevel(currentLevel);
+      document.getElementById('btnNext2').onclick = nextItem;
     }
 
     // ===== Speed =====
@@ -414,44 +381,38 @@
       const it = currentSet[currentIndex];
       const opts = shuffle(WORDS).slice(0,4);
       if(!opts.includes(it.a)) opts[Math.floor(Math.random()*opts.length)] = it.a;
-      const pills = opts.map((w,i)=>`<button class="btn btn-outline-primary answer-pill me-2 mb-2" data-word="${w}">${i+1}. ${w}</button>`).join('');
+      const pills = opts.map((w,i)=>`<button class=\"btn btn-outline-primary answer-pill me-2 mb-2\" data-word=\"${w}\">${i+1}. ${w}</button>`).join('');
       const html = `
-        <div class="card p-3 p-md-4">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="small text-muted">Level ${currentLevel} — Speed ${currentIndex+1}/${currentSet.length}</div>
-            <div class="small text-muted">Time: <span id="spdTime">${timeLeft}</span>s • Round: <strong id="spdScore">${speedScore}</strong></div>
-          </div>
-          <h3 class="h5 mb-3">${it.prompt}</h3>
-          <div id="speedPills">${pills}</div>
-          <div class="mt-3" id="feedback"></div>
-        </div>`;
+        <div class=\"card p-3 p-md-4\">
+          <div class=\"d-flex justify-content-between align-items-center mb-2\">
+            <div class=\"small text-muted\">Level ${currentLevel} — Speed ${currentIndex+1}/${currentSet.length}</div>
+            <div class=\"small text-muted\"><span id=\"spdTime\">${
 
       document.getElementById('area').innerHTML = html;
 
+      let picked=null;
       document.querySelectorAll('#speedPills .answer-pill').forEach(btn=>{
         btn.addEventListener('click',()=>{
-          const val = btn.dataset.word;
-          const ok = val===it.a;
-          tasks++;
-          if(ok){ score+=6; streak++; correctTotal++; speedScore+=6; }
-          else { score=Math.max(0,score-1); streak=0; mistakes++; }
-          updateStats();
-          document.getElementById('feedback').innerHTML = ok? `<div class="alert alert-success">✅ ${it.a}</div>`: `<div class="alert alert-danger">❌ ${it.a}</div>`;
-          setTimeout(()=>{
-            if(currentIndex<currentSet.length-1){ currentIndex++; renderSpeed(); }
-            else { endLevel(); }
-          }, 250);
+          document.querySelectorAll('#speedPills .answer-pill').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          picked = btn.dataset.word;
+          document.getElementById('spdCheck').disabled = false;
         });
       });
+
+      document.getElementById('spdCheck').onclick = () => {
+        const ok = picked===it.a;
+        tasks++;
+        if(ok){ score+=6; streak++; correctTotal++; speedScore+=6; }
+        else { score=Math.max(0,score-1); streak=0; mistakes++; }
+        updateStats();
+        document.getElementById('feedback').innerHTML = ok? `<div class=\"alert alert-success\">✅ ${it.a}</div>`: `<div class=\"alert alert-danger\">❌ ${it.a}</div>`;
+        document.getElementById('spdNext').disabled = false;
+      };
+      document.getElementById('spdNext').onclick = nextItem;
     }
 
-    function startSpeedTimer(){
-      clearInterval(speedTimer);
-      speedTimer = setInterval(()=>{
-        timeLeft--; const t = document.getElementById('spdTime'); if(t) t.textContent=timeLeft;
-        setTimerBadge(timeLeft);
-        if(timeLeft<=0){ endLevel(); }
-      },1000);
+          },1000);
     }
 
     // ===== Wiring =====
