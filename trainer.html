@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Question Words Trainer</title>
+  <!-- Bootstrap 5.0.2 (per your preference) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <style>
+    :root { --brand:#0d6efd; }
+    body { background:#f8f9fa; }
+    .card { border:none; box-shadow:0 6px 18px rgba(0,0,0,.06); border-radius:1rem; }
+    .btn-check + .btn-outline-primary { border-radius:.75rem; }
+    .wchip { display:inline-block; padding:.25rem .5rem; border-radius:.5rem; background:#e9f2ff; color:#0b5ed7; font-weight:600; margin:.125rem; }
+    .answer-pill { border-radius:.75rem; }
+    .correct { border:2px solid #28a745 !important; background:#e8f9ee !important; }
+    .wrong { border:2px solid #dc3545 !important; background:#fde8ea !important; }
+    .draggable { cursor:grab; user-select:none; }
+    .dropzone { min-height:44px; border:2px dashed #ced4da; border-radius:.75rem; padding:.25rem .5rem; background:#fff; }
+    .dropzone.filled { border-style:solid; }
+    .kbd {font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+    .smallcaps { font-variant: all-small-caps; letter-spacing: .04em; }
+  </style>
+</head>
+<body>
+  <div class="container py-4 py-md-5">
+    <header class="mb-4 text-center">
+      <h1 class="h2 fw-bold mb-2">Question Words Trainer</h1>
+      <p class="text-muted mb-0">Practice <span class="smallcaps">what / where / when / who / why / which / whose / how</span> (+ how much/many/often/long/far).</p>
+    </header>
+
+    <!-- Quick Stats -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="card p-3 text-center">
+          <div class="small text-muted">Score</div>
+          <div class="display-6" id="statScore">0</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card p-3 text-center">
+          <div class="small text-muted">Streak</div>
+          <div class="display-6" id="statStreak">0</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card p-3 text-center">
+          <div class="small text-muted">Tasks</div>
+          <div class="display-6" id="statTasks">0</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card p-3 text-center">
+          <div class="small text-muted">Accuracy</div>
+          <div class="display-6" id="statAcc">0%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="card p-3 p-md-4 mb-4">
+      <div class="row g-3 align-items-end">
+        <div class="col-12 col-md-6">
+          <label class="form-label">Mode</label>
+          <div class="btn-group w-100" role="group">
+            <input type="radio" class="btn-check" name="mode" id="modeFill" autocomplete="off" checked>
+            <label class="btn btn-outline-primary" for="modeFill">Fill-in</label>
+            <input type="radio" class="btn-check" name="mode" id="modeMatch" autocomplete="off">
+            <label class="btn btn-outline-primary" for="modeMatch">Match</label>
+            <input type="radio" class="btn-check" name="mode" id="modeSpeed" autocomplete="off">
+            <label class="btn btn-outline-primary" for="modeSpeed">Speed</label>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="form-label">Set size</label>
+          <select class="form-select" id="setSize">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-3 d-grid">
+          <button id="btnNew" class="btn btn-primary">New Set</button>
+        </div>
+      </div>
+      <div class="mt-3 small text-muted">Tip: press <span class="kbd">Enter</span> to check; <span class="kbd">N</span> to next.</div>
+    </div>
+
+    <!-- Task Area -->
+    <div id="area" class="mb-4"></div>
+
+    <!-- Cheat Sheet -->
+    <div class="card p-3 p-md-4">
+      <div class="d-flex align-items-center justify-content-between">
+        <h2 class="h5 mb-0">Cheat Sheet</h2>
+        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#sheet">Show/Hide</button>
+      </div>
+      <div class="collapse show mt-3" id="sheet">
+        <div class="mb-2">
+          <span class="wchip">what — что</span>
+          <span class="wchip">where — где</span>
+          <span class="wchip">when — когда</span>
+          <span class="wchip">who — кто</span>
+          <span class="wchip">why — почему</span>
+          <span class="wchip">which — какой/который</span>
+          <span class="wchip">whose — чей</span>
+          <span class="wchip">how — как</span>
+          <span class="wchip">how much — сколько (неисчисл.)</span>
+          <span class="wchip">how many — сколько (исчисл.)</span>
+          <span class="wchip">how often — как часто</span>
+          <span class="wchip">how long — как долго</span>
+          <span class="wchip">how far — как далеко</span>
+        </div>
+        <div class="small text-muted">Examples: what’s your name? where do you live? when is the lesson? who is calling? why are you late? which color? whose bag? how are you? how much sugar? how many students? how often do you read? how long is the film? how far is the station?</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <script>
+    // ===== Data =====
+    const WORDS = [
+      'what','where','when','who','why','which','whose','how',
+      'how much','how many','how often','how long','how far'
+    ];
+
+    // Fill-in items: { textBefore, gapAnswer, textAfter, help }
+    const FILL_BANK = [
+      {b:"___ is your favorite subject?", a:"what", h:"asking for specific information"},
+      {b:"___ are you from?", a:"where", h:"place"},
+      {b:"___ is your birthday?", a:"when", h:"time/date"},
+      {b:"___ is standing at the door?", a:"who", h:"person"},
+      {b:"___ are you late?", a:"why", h:"reason"},
+      {b:"___ color do you prefer — red or blue?", a:"which", h:"choice between limited options"},
+      {b:"___ bag is this?", a:"whose", h:"possession"},
+      {b:"___ do you come to college? By bus or on foot?", a:"how", h:"manner/method"},
+      {b:"___ milk do we need for pancakes?", a:"how much", h:"quantity (uncountable)"},
+      {b:"___ students are in your group?", a:"how many", h:"quantity (countable)"},
+      {b:"___ do you travel? (every day/once a week)", a:"how often", h:"frequency"},
+      {b:"___ is the lesson? (60 minutes)", a:"how long", h:"duration"},
+      {b:"___ is your college from your house?", a:"how far", h:"distance"},
+      {b:"At ___ time does the lesson start?", a:"what", h:"can use 'what time'"},
+      {b:"___ of these two options is cheaper?", a:"which", h:"limited set"},
+      {b:"___ are you feeling today?", a:"how", h:"state/condition"},
+      {b:"___ do you need this document?", a:"why", h:"reason"},
+      {b:"___ city would you like to visit next?", a:"which", h:"choice"},
+      {b:"___ is your best friend’s name?", a:"what", h:"specific information"},
+      {b:"___ does the museum open on weekends?", a:"when", h:"time"}
+    ];
+
+    // Match items: question -> answer
+    const MATCH_BANK = [
+      {q:"Where do you study?", a:"In Pavlovsky Posad College."},
+      {q:"When do you get up?", a:"At 7 a.m."},
+      {q:"Who teaches you English?", a:"Mr. Andrey."},
+      {q:"Why are you laughing?", a:"Because it’s funny!"},
+      {q:"How many dogs do you have?", a:"Two."},
+      {q:"How long is the film?", a:"About two hours."},
+      {q:"How much water do you drink daily?", a:"Around two liters."},
+      {q:"How far is the station?", a:"About 2 kilometers."},
+      {q:"Whose jacket is this?", a:"It’s Lena’s."},
+      {q:"Which color do you like more?", a:"Blue."},
+      {q:"How often do you read books?", a:"Every evening."},
+      {q:"What’s your dream job?", a:"Designer."}
+    ];
+
+    // ===== State =====
+    let score=0, streak=0, tasks=0, correctTotal=0;
+    let currentSet=[]; // generic holder depending on mode
+    let currentIndex=0;
+    let currentMode='fill';
+
+    function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]); }
+
+    function updateStats(){
+      document.getElementById('statScore').textContent=score;
+      document.getElementById('statStreak').textContent=streak;
+      document.getElementById('statTasks').textContent=tasks;
+      const acc = tasks? Math.round((correctTotal/tasks)*100):0;
+      document.getElementById('statAcc').textContent=acc+"%";
+    }
+
+    function pickSet(bank, n){
+      return shuffle(bank).slice(0,n);
+    }
+
+    // ===== Renderers =====
+    function renderArea(html){
+      document.getElementById('area').innerHTML=html;
+    }
+
+    function newFillSet(){
+      const n = +document.getElementById('setSize').value;
+      currentSet = pickSet(FILL_BANK, n);
+      currentIndex = 0;
+      renderFillItem();
+    }
+
+    function renderFillItem(){
+      const item = currentSet[currentIndex];
+      const opts = shuffle(WORDS).slice(0,6);
+      if(!opts.includes(item.a)) { opts[Math.floor(Math.random()*opts.length)] = item.a; }
+      const pills = opts.map(w=>`<button type="button" class="btn btn-outline-primary answer-pill me-2 mb-2" data-word="${w}">${w}</button>`).join('');
+
+      const html = `
+        <div class="card p-3 p-md-4">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="small text-muted">Fill-in — Question ${currentIndex+1} / ${currentSet.length}</div>
+            <div class="small text-muted">Hint: ${item.h}</div>
+          </div>
+          <h3 class="h5 mb-3">${item.b.replace('___', '<span class="fw-bold text-primary">(choose)</span>')}</h3>
+
+          <div class="mb-2" id="fillPills">${pills}</div>
+          <div class="input-group mb-3">
+            <span class="input-group-text">Your answer</span>
+            <input id="fillInput" class="form-control" placeholder="type or click a pill…">
+          </div>
+          <div class="d-grid d-md-flex gap-2">
+            <button id="btnCheck" class="btn btn-success">Check</button>
+            <button id="btnNext" class="btn btn-outline-secondary">Next</button>
+            <button id="btnReveal" class="btn btn-outline-dark ms-md-auto">Reveal</button>
+          </div>
+          <div class="mt-3" id="feedback"></div>
+        </div>`;
+
+      renderArea(html);
+
+      // interactions
+      document.querySelectorAll('#fillPills .answer-pill').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          document.getElementById('fillInput').value = btn.dataset.word;
+          document.getElementById('fillInput').focus();
+        });
+      });
+      document.getElementById('btnCheck').onclick = () => checkFill(item);
+      document.getElementById('btnNext').onclick = nextItem;
+      document.getElementById('btnReveal').onclick = () => reveal(item);
+
+      const input = document.getElementById('fillInput');
+      input.addEventListener('keydown', (e)=>{
+        if(e.key==='Enter') document.getElementById('btnCheck').click();
+        if(e.key.toLowerCase()==='n') document.getElementById('btnNext').click();
+      });
+      input.focus();
+    }
+
+    function checkFill(item){
+      const val = (document.getElementById('fillInput').value||'').trim().toLowerCase();
+      const ok = val === item.a;
+      tasks++;
+      if(ok){ score+=10; streak++; correctTotal++; }
+      else { score=Math.max(0,score-2); streak=0; }
+      updateStats();
+      const fb = document.getElementById('feedback');
+      fb.innerHTML = ok
+        ? `<div class="alert alert-success">✅ Correct! <strong>${item.a}</strong></div>`
+        : `<div class="alert alert-danger">❌ Not quite. Correct: <strong>${item.a}</strong></div>`;
+    }
+
+    function reveal(item){
+      document.getElementById('fillInput').value = item.a;
+      document.getElementById('fillInput').classList.add('correct');
+    }
+
+    function nextItem(){
+      if(currentIndex < currentSet.length-1){
+        currentIndex++;
+        if(currentMode==='fill') renderFillItem();
+        else if(currentMode==='match') renderMatch();
+        else if(currentMode==='speed') renderSpeed();
+      } else {
+        endSet();
+      }
+    }
+
+    function endSet(){
+      renderArea(`
+        <div class="card p-4 text-center">
+          <h3 class="h4 mb-2">Set finished 🎉</h3>
+          <p class="text-muted">Score: <strong>${score}</strong> • Accuracy: <strong>${tasks?Math.round((correctTotal/tasks)*100):0}%</strong></p>
+          <div class="d-grid d-md-flex justify-content-center gap-2">
+            <button class="btn btn-primary" id="again">Start New</button>
+            <button class="btn btn-outline-secondary" id="review">Review Last Set</button>
+          </div>
+        </div>`);
+      document.getElementById('again').onclick = () => document.getElementById('btnNew').click();
+      document.getElementById('review').onclick = reviewLast;
+    }
+
+    function reviewLast(){
+      if(currentMode==='fill'){
+        const list = currentSet.map((it,i)=>`<li class="list-group-item">${i+1}. ${it.b.replace('___', `<strong>${it.a}</strong>`)}</li>`).join('');
+        renderArea(`<div class="card p-3"><ol class="list-group list-group-numbered">${list}</ol></div>`);
+      } else if(currentMode==='match') {
+        const list = currentSet.map((it,i)=>`<li class="list-group-item">${i+1}. <strong>${it.q}</strong> — ${it.a}</li>`).join('');
+        renderArea(`<div class="card p-3"><ol class="list-group list-group-numbered">${list}</ol></div>`);
+      } else if(currentMode==='speed') {
+        // speed review same as fill wording
+        const list = currentSet.map((it,i)=>`<li class="list-group-item">${i+1}. ${it.prompt} — <strong>${it.a}</strong></li>`).join('');
+        renderArea(`<div class="card p-3"><ol class="list-group list-group-numbered">${list}</ol></div>`);
+      }
+    }
+
+    // ===== Match mode =====
+    function newMatchSet(){
+      const n = +document.getElementById('setSize').value;
+      currentSet = pickSet(MATCH_BANK, n);
+      currentIndex = 0; // not used like fill; full grid at once
+      renderMatch();
+    }
+
+    function renderMatch(){
+      // Render all pairs for current set in a grid: left (questions), right (answers) draggable
+      const left = currentSet.map((it,i)=>`<div class="p-2 mb-2 bg-white rounded border" data-qidx="${i}"><strong>${i+1}.</strong> ${it.q}</div>`).join('');
+      const rights = shuffle(currentSet.map((it,i)=>({text:it.a, idx:i})));
+      const right = rights.map(r=>`<div class="p-2 mb-2 bg-white rounded border draggable" draggable="true" data-aidx="${r.idx}">${r.text}</div>`).join('');
+
+      const html = `
+        <div class="card p-3 p-md-4">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="small text-muted">Match — ${currentSet.length} pairs</div>
+            <div class="small text-muted">Drag answers to the dropzones</div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              ${currentSet.map((it,i)=>`
+                <div class="mb-2">
+                  <div class="p-2 bg-light rounded border mb-2"><strong>${i+1}.</strong> ${it.q}</div>
+                  <div class="dropzone" data-drop="${i}"></div>
+                </div>
+              `).join('')}
+            </div>
+            <div class="col-12 col-md-6">
+              <div id="pool">${right}</div>
+            </div>
+          </div>
+
+          <div class="d-grid d-md-flex gap-2 mt-3">
+            <button id="matchCheck" class="btn btn-success">Check</button>
+            <button id="matchReset" class="btn btn-outline-secondary">Reset</button>
+            <button id="btnNext2" class="btn btn-outline-dark ms-md-auto">New Set</button>
+          </div>
+          <div class="mt-3" id="feedback"></div>
+        </div>`;
+
+      renderArea(html);
+
+      // Drag & drop
+      const draggables = Array.from(document.querySelectorAll('.draggable'));
+      draggables.forEach(el=>{
+        el.addEventListener('dragstart', e=>{
+          e.dataTransfer.setData('text/plain', el.dataset.aidx);
+        });
+      });
+      document.querySelectorAll('.dropzone').forEach(zone=>{
+        zone.addEventListener('dragover', e=>{ e.preventDefault(); });
+        zone.addEventListener('drop', e=>{
+          e.preventDefault();
+          const aidx = e.dataTransfer.getData('text/plain');
+          // place a clone to allow reuse on reset
+          const source = draggables.find(d=>d.dataset.aidx===aidx);
+          const clone = source.cloneNode(true);
+          clone.classList.remove('draggable');
+          clone.draggable = false;
+          zone.innerHTML='';
+          zone.appendChild(clone);
+          zone.classList.add('filled');
+          zone.dataset.aidx = aidx;
+        });
+      });
+
+      document.getElementById('matchCheck').onclick = () => {
+        let localCorrect=0; let localTotal=currentSet.length;
+        document.querySelectorAll('.dropzone').forEach(zone=>{
+          tasks++;
+          const dropIdx = +zone.dataset.drop;
+          const got = zone.dataset.aidx;
+          const ok = (got !== undefined) && (+got === dropIdx);
+          if(ok){ localCorrect++; correctTotal++; score+=5; } else { score=Math.max(0,score-1); }
+          if(ok){ zone.classList.add('correct'); } else { zone.classList.add('wrong'); }
+        });
+        streak = (localCorrect===localTotal)? (streak+1) : 0;
+        updateStats();
+        document.getElementById('feedback').innerHTML = `<div class="alert alert-info">You matched <strong>${localCorrect}/${localTotal}</strong>.</div>`;
+      };
+      document.getElementById('matchReset').onclick = renderMatch;
+      document.getElementById('btnNext2').onclick = () => { currentIndex=0; newMatchSet(); };
+    }
+
+    // ===== Speed mode =====
+    // Rapid prompts like: "(distance) ____ is the station?" -> how far
+    const SPEED_BANK = [
+      {prompt:"(specific info) ____ is your name?", a:"what"},
+      {prompt:"(place) ____ do you live?", a:"where"},
+      {prompt:"(time) ____ do you arrive?", a:"when"},
+      {prompt:"(person) ____ called you?", a:"who"},
+      {prompt:"(reason) ____ are you late?", a:"why"},
+      {prompt:"(choice) ____ color do you choose?", a:"which"},
+      {prompt:"(possession) ____ book is this?", a:"whose"},
+      {prompt:"(manner) ____ do you go to work?", a:"how"},
+      {prompt:"(uncountable) ____ sugar do we need?", a:"how much"},
+      {prompt:"(countable) ____ students were absent?", a:"how many"},
+      {prompt:"(frequency) ____ do you clean the room?", a:"how often"},
+      {prompt:"(duration) ____ is the break?", a:"how long"},
+      {prompt:"(distance) ____ is the station?", a:"how far"}
+    ];
+
+    let speedTimer=null, timeLeft=0, speedScore=0;
+
+    function newSpeedSet(){
+      const n = +document.getElementById('setSize').value;
+      currentSet = pickSet(SPEED_BANK, n);
+      currentIndex = 0; speedScore=0; timeLeft = 45; // seconds
+      renderSpeed();
+      startSpeedTimer();
+    }
+
+    function renderSpeed(){
+      const it = currentSet[currentIndex];
+      const opts = shuffle(WORDS).slice(0,4);
+      if(!opts.includes(it.a)) opts[Math.floor(Math.random()*opts.length)] = it.a;
+      const pills = opts.map((w,i)=>`<button class="btn btn-outline-primary answer-pill me-2 mb-2" data-word="${w}">${i+1}. ${w}</button>`).join('');
+      renderArea(`
+        <div class="card p-3 p-md-4">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="small text-muted">Speed — ${currentIndex+1}/${currentSet.length}</div>
+            <div class="small text-muted">Time: <span id="spdTime">${timeLeft}</span>s • Round score: <strong id="spdScore">${speedScore}</strong></div>
+          </div>
+          <h3 class="h5 mb-3">${it.prompt}</h3>
+          <div id="speedPills">${pills}</div>
+          <div class="mt-3" id="feedback"></div>
+        </div>`);
+
+      document.querySelectorAll('#speedPills .answer-pill').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const val = btn.dataset.word;
+          const ok = val===it.a;
+          tasks++;
+          if(ok){ score+=6; streak++; correctTotal++; speedScore+=6; }
+          else { score=Math.max(0,score-1); streak=0; }
+          updateStats();
+          document.getElementById('feedback').innerHTML = ok? `<div class="alert alert-success">✅ ${it.a}</div>`: `<div class="alert alert-danger">❌ ${it.a}</div>`;
+          setTimeout(()=>{
+            if(currentIndex<currentSet.length-1){ currentIndex++; renderSpeed(); }
+            else { endSpeed(); }
+          }, 300);
+        });
+      });
+    }
+
+    function startSpeedTimer(){
+      clearInterval(speedTimer);
+      speedTimer = setInterval(()=>{
+        timeLeft--; const t = document.getElementById('spdTime'); if(t) t.textContent=timeLeft;
+        if(timeLeft<=0){ endSpeed(); }
+      },1000);
+    }
+
+    function endSpeed(){
+      clearInterval(speedTimer);
+      renderArea(`
+        <div class="card p-4 text-center">
+          <h3 class="h4 mb-2">Speed round over ⏱️</h3>
+          <p class="text-muted">Round score: <strong>${speedScore}</strong></p>
+          <div class="d-grid d-md-flex justify-content-center gap-2">
+            <button class="btn btn-primary" id="again">Play Again</button>
+            <button class="btn btn-outline-secondary" id="review">Review Items</button>
+          </div>
+        </div>`);
+      document.getElementById('again').onclick = () => document.getElementById('btnNew').click();
+      document.getElementById('review').onclick = reviewLast;
+    }
+
+    // ===== Controls =====
+    document.getElementById('btnNew').addEventListener('click', ()=>{
+      if(document.getElementById('modeFill').checked){ currentMode='fill'; newFillSet(); }
+      else if(document.getElementById('modeMatch').checked){ currentMode='match'; newMatchSet(); }
+      else { currentMode='speed'; newSpeedSet(); }
+    });
+
+    document.getElementById('modeFill').addEventListener('change', ()=>{
+      if(document.getElementById('modeFill').checked){ currentMode='fill'; newFillSet(); }
+    });
+    document.getElementById('modeMatch').addEventListener('change', ()=>{
+      if(document.getElementById('modeMatch').checked){ currentMode='match'; newMatchSet(); }
+    });
+    document.getElementById('modeSpeed').addEventListener('change', ()=>{
+      if(document.getElementById('modeSpeed').checked){ currentMode='speed'; newSpeedSet(); }
+    });
+
+    // Reset stats on reload
+    function resetAll(){ score=0; streak=0; tasks=0; correctTotal=0; updateStats(); }
+
+    // Keyboard shortcuts
+    window.addEventListener('keydown', (e)=>{
+      if(e.key.toLowerCase()==='n') nextItem();
+    });
+
+    // boot
+    resetAll();
+    newFillSet();
+  </script>
+</body>
+</html>
